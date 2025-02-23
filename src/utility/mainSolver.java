@@ -1,144 +1,137 @@
-package src;
-import java.io.File;
-import java.io.FileNotFoundException;
+package src.utility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class mainSolver {
-    public char[][] solve(File file) {
+
+    public StringBuilder MessageIntro = new StringBuilder();
+    public StringBuilder MessageEntry = new StringBuilder();
+    public StringBuilder MessageOutro = new StringBuilder();
+
+    public void solve(String inputString) {
     
-        try {
-            Scanner scanner = new Scanner(file);
+        Scanner scanner = new Scanner(inputString);
 
-            int[] validasi = readConfigurations(scanner);
-            if (validasi == null) {
-                return null;
-            } 
-            
-            List<List<Character>> inputPapan = new ArrayList<>();
-            if (validasi[3] == 2) {
-                inputPapan = readPapan(scanner, validasi[0], validasi[1]);
-                if (inputPapan == null) {
-                    return null;
-                }
-            }
-            
-            // for (int i = 0; i < inputPapan.size(); i++) {
-            //     System.out.println(inputPapan.get(i));
-            // }
-
-            matrix[] puzzles = readPuzzles(scanner, validasi[2]);
-            if (puzzles == null) {
-                return null;
-            }
-
-            if (validasi[3] == 1) {
-                solver solver = new solver(validasi[0], validasi[1]);
-                long startTime = System.nanoTime();
-                int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
-    
-                if (hasilBruteForce[0] == 1) {
-                    System.out.println("Puzzle dapat diselesaikan! Susunan akhir:\n");
-                    solver.printPapan();
-                } else {
-                    if (solver.gagal) {
-                        System.out.println("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
-                    }
-                    System.out.println("Tidak ada solusi.\n");
-                }
-                System.out.println(" ");
-                                
-                long endTime = System.nanoTime(); long duration = endTime - startTime;
-                System.out.println("Waktu eksekusi: " + (duration / 1000000.0) + " ms");
-                System.out.println("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
-
-                if (hasilBruteForce[0] == 1) {
-                    Scanner save = new Scanner(System.in);
-                    
-                    while (true) {
-                        System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
-                        
-                        String input = save.nextLine().trim();
+        int[] validasi = readConfigurations(scanner);
+        if (validasi == null) {
+            MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+            return;
+        } 
         
-                        if (input.equalsIgnoreCase("iya")) {
-                            System.out.println("Melakukan penyimpanan solusi...");
-                            solver.savePapan();
-                            break;
-                        } else if (input.equalsIgnoreCase("tidak")) {
-                            System.out.println("Solusi tidak disimpan.");
-                            break;
-                        } else {
-                            System.out.println("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
-                        }
-                    }
-                    System.out.println(" ");
-        
-                    save.close();
-                    return solver.papan;
-                } else {
-                    return null;
-                }
-
-            } else {
-                solverCustom solver = new solverCustom(inputPapan, validasi[0], validasi[1]);
-                long startTime = System.nanoTime();
-                int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
-    
-                if (hasilBruteForce[0] == 1) {
-                    System.out.println("Puzzle dapat diselesaikan! Susunan akhir:\n");
-                    solver.printPapan();
-                } else {
-                    if (solver.gagal) {
-                        System.out.println("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
-                    }
-                    System.out.println("Tidak ada solusi.\n");
-                }
-                System.out.println(" ");
-    
-                long endTime = System.nanoTime(); long duration = endTime - startTime;
-                System.out.println("Waktu eksekusi: " + (duration / 1000000.0) + " ms");
-                System.out.println("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
-
-                if (hasilBruteForce[0] == 1) {
-                    Scanner save = new Scanner(System.in);
-                    
-                    while (true) {
-                        System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
-                        
-                        String input = save.nextLine().trim();
-        
-                        if (input.equalsIgnoreCase("iya")) {
-                            System.out.println("Melakukan penyimpanan solusi...");
-                            solver.savePapan();
-                            break;
-                        } else if (input.equalsIgnoreCase("tidak")) {
-                            System.out.println("Solusi tidak disimpan.");
-                            break;
-                        } else {
-                            System.out.println("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
-                        }
-                    }
-                    System.out.println(" ");
-
-                    save.close();
-                    return solver.papan;
-                } else {
-                    return null;
-                }
-
+        List<List<Character>> inputPapan = new ArrayList<>();
+        if (validasi[3] == 2) {
+            inputPapan = readPapan(scanner, validasi[0], validasi[1]);
+            if (inputPapan == null) {
+                MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+                return;
             }
+        }
+        
+        // for (int i = 0; i < inputPapan.size(); i++) {
+        //     Message.append(inputPapan.get(i));
+        // }
 
-
-        } catch (FileNotFoundException e) {
-            System.out.println("File tidak ditemukan.");
-            return null;
+        matrix[] puzzles = readPuzzles(scanner, validasi[2]);
+        if (puzzles == null) {
+            MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+            return;
         }
 
+        if (validasi[3] == 1) {
+            solver solver = new solver(validasi[0], validasi[1]);
+            long startTime = System.nanoTime();
+            int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
+
+            if (hasilBruteForce[0] == 1) {
+                MessageIntro.append("Puzzle dapat diselesaikan!");
+                MessageEntry.append(solver.printPapan());
+            } else {
+                MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+                if (solver.gagal) {
+                    MessageEntry.append("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
+                }
+            }
+                            
+            long endTime = System.nanoTime(); long duration = endTime - startTime;
+            MessageOutro.append("Waktu eksekusi: " + (duration / 1000000.0) + " ms\n");
+            MessageOutro.append("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
+
+            // if (hasilBruteForce[0] == 1) {
+            //     Scanner save = new Scanner(System.in);
+                
+            //     while (true) {
+            //         System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
+                    
+            //         String input = save.nextLine().trim();
+    
+            //         if (input.equalsIgnoreCase("iya")) {
+            //             Message.append("Melakukan penyimpanan solusi...");
+            //             solver.savePapan();
+            //             break;
+            //         } else if (input.equalsIgnoreCase("tidak")) {
+            //             Message.append("Solusi tidak disimpan.");
+            //             break;
+            //         } else {
+            //             Message.append("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
+            //         }
+            //     }
+            //     Message.append(" ");
+    
+            //     save.close();
+            // }
+
+            return;
+
+        } else {
+            solverCustom solver = new solverCustom(inputPapan, validasi[0], validasi[1]);
+            long startTime = System.nanoTime();
+            int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
+
+            if (hasilBruteForce[0] == 1) {
+                MessageIntro.append("Puzzle dapat diselesaikan!");
+                MessageEntry.append(solver.printPapan());
+            } else {
+                MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+                if (solver.gagal) {
+                    MessageEntry.append("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
+                }
+            }
+                            
+            long endTime = System.nanoTime(); long duration = endTime - startTime;
+            MessageOutro.append("Waktu eksekusi: " + (duration / 1000000.0) + " ms\n");
+            MessageOutro.append("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
+
+            // if (hasilBruteForce[0] == 1) {
+            //     Scanner save = new Scanner(System.in);
+                
+            //     while (true) {
+            //         System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
+                    
+            //         String input = save.nextLine().trim();
+    
+            //         if (input.equalsIgnoreCase("iya")) {
+            //             Message.append("Melakukan penyimpanan solusi...");
+            //             solver.savePapan();
+            //             break;
+            //         } else if (input.equalsIgnoreCase("tidak")) {
+            //             Message.append("Solusi tidak disimpan.");
+            //             break;
+            //         } else {
+            //             Message.append("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
+            //         }
+            //     }
+            //     Message.append(" ");
+
+            //     save.close();
+            // }
+            
+            return;
+        }
     }
 
     /* validasi terhadap input variabel M, N, dan P */
-    public static boolean isValidNumber(String str) {
+    public boolean isValidNumber(String str) {
         if (str.matches("-?\\d+")) {
             int number = Integer.parseInt(str);
             
@@ -150,7 +143,7 @@ public class mainSolver {
     }
 
     /* membaca konfigurasi papan dari file .txt */
-    public static int[] readConfigurations(Scanner scanner) {
+    public int[] readConfigurations(Scanner scanner) {
 
             char[] variabel = {'M', 'N', 'P'};
             List<Integer> nilaiVariabel = new ArrayList<>();
@@ -160,14 +153,14 @@ public class mainSolver {
                     String token = scanner.next();
                     if (isValidNumber(token)) {
                         nilaiVariabel.add(Integer.parseInt(token));
-                        // System.out.println("Nilai " + variabel[i] + ": " + nilaiVariabel.get(i));
+                        // Message.append("Nilai " + variabel[i] + ": " + nilaiVariabel.get(i));
                     } else {
-                        System.out.println(token + " bukan nilai yang valid untuk variabel " + variabel[i]);
+                        MessageEntry.append(token + " bukan nilai yang valid untuk variabel " + variabel[i] + ".");
                         scanner.close();
                         return null;
                     }
                 } else {
-                    System.out.println("Tidak ada nilai yang dibaca untuk variabel " + variabel[i]);
+                    MessageEntry.append("Tidak ada nilai yang dibaca untuk variabel " + variabel[i] + ".");
                     scanner.close();
                     return null;
                 }
@@ -175,7 +168,7 @@ public class mainSolver {
 
             String token = scanner.next();
             if (!(token.equals("DEFAULT") || token.equals("CUSTOM"))) {
-                System.out.println("Bukan kasus konfigurasi yang valid!");
+                MessageEntry.append("Bukan kasus konfigurasi yang valid.");
                 scanner.close();
                 return null;
             }
@@ -192,7 +185,7 @@ public class mainSolver {
     }
 
     /* membaca konfigurasi puzzles dari file .txt */
-    public static matrix[] readPuzzles(Scanner scanner, int jumlahPuzzle) {
+    public matrix[] readPuzzles(Scanner scanner, int jumlahPuzzle) {
         
         List<matrix> inputPuzzle = new ArrayList<>();
         List<List<Integer>> bentukPuzzle = new ArrayList<>();
@@ -206,7 +199,7 @@ public class mainSolver {
         for (int i = 0; i < kolomPuzzle; i++) {
             if (currentLine[i] != ' ') {
                 if (currentLine[i] == '.' || currentLine[i] == 'X') {
-                    System.out.println("Input papan custom tidak sesuai dengan nilai variabel M dan N.");
+                    MessageEntry.append("Input papan custom tidak sesuai dengan nilai variabel M dan N.");
                     return null;
                 }
                 currentChar = currentLine[i];
@@ -216,7 +209,7 @@ public class mainSolver {
 
         for (int i = 0; i < kolomPuzzle; i++) {
             if (currentLine[i] != ' ' && currentLine[i] != currentChar) {
-                System.out.println("Terdapat huruf yang berbeda pada satu baris input, bukan input yang valid!");
+                MessageEntry.append("Terdapat huruf yang berbeda pada satu baris puzzle, bukan input yang valid.");
                 scanner.close();
                 return null;
             }
@@ -248,7 +241,7 @@ public class mainSolver {
 
             for (int i = 0; i < currentLine.length; i++) {
                 if (currentLine[i] != ' ' && currentLine[i] != currentChar) {
-                    System.out.println("Terdapat huruf yang berbeda pada satu baris input, bukan input yang valid!");
+                    MessageEntry.append("Terdapat huruf yang berbeda pada satu baris puzzle, bukan input yang valid.");
                     scanner.close();
                     return null;
                 }
@@ -256,10 +249,10 @@ public class mainSolver {
 
             for (int i = 0; i < currentLine.length; i++) {            
                 if (currentLine[i] != ' ' && currentLine[i] != charToCheck) {
-                    // System.out.println("currentLine: " + line + "]");
-                    // System.out.println("currentLine[i]: " + currentLine[i]);
-                    // System.out.println("barisPuzzle: " + barisPuzzle);
-                    // System.out.println("kolomPuzzle: " + kolomPuzzle);
+                    // Message.append("currentLine: " + line + "]");
+                    // Message.append("currentLine[i]: " + currentLine[i]);
+                    // Message.append("barisPuzzle: " + barisPuzzle);
+                    // Message.append("kolomPuzzle: " + kolomPuzzle);
                     matrix currentPuzzle = new matrix(charToCheck, barisPuzzle, kolomPuzzle);
 
                     for (int m = 0; m < barisPuzzle; m++) {
@@ -321,7 +314,7 @@ public class mainSolver {
         inputPuzzle.add(currentPuzzle);
 
         if (inputPuzzle.size() != jumlahPuzzle) {
-            System.out.println("Jumlah potongan puzzle tidak sama dengan nilai variabel P.");
+            MessageEntry.append("Jumlah potongan puzzle tidak sama dengan nilai variabel P.");
             scanner.close();
             return null;
         }
@@ -331,21 +324,21 @@ public class mainSolver {
     }
 
     /* membaca konfigurasi papan custom dari file .txt */
-    public static List<List<Character>> readPapan(Scanner scanner, int barisPapan, int kolomPapan) {
+    public List<List<Character>> readPapan(Scanner scanner, int barisPapan, int kolomPapan) {
         List<List<Character>> hasil = new ArrayList<>();
         String line = scanner.nextLine();
         char[] currentLine = line.toCharArray();
 
         for (int i = 0; i < barisPapan; i++) {
             if (currentLine.length != kolomPapan) {
-                System.out.println("Input papan custom tidak sesuai dengan nilai variabel M dan N.");
+                MessageEntry.append("Input papan custom tidak sesuai dengan nilai variabel M dan N.");
                 return null;
             }
 
             List<Character> currentHasil = new ArrayList<>();
             for (int j = 0; j < kolomPapan; j++) {
                 if (currentLine[j] != '.' && currentLine[j] != 'X') {
-                    System.out.println("Input papan custom memiliki char selain '.' dan 'X'");
+                    MessageEntry.append("Input papan custom memiliki char selain '.' dan 'X'.");
                     return null;
                 }
 

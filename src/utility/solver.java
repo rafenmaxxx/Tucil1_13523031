@@ -1,8 +1,8 @@
-package src;
+package src.utility;
 import java.io.*;
 import java.util.*;
 
-public class solver {
+public class solver extends mainSolver {
 
     public boolean gagal = false;
     public int barisPapan;
@@ -102,56 +102,20 @@ public class solver {
         return new int[]{0, iterations};
     }
 
-    /* menampilkan hasil akhir papan */
-    public void printPapan() {
-        String reset = "\u001B[0m";
-        List<String> warna = List.of(
-"\u001B[30m",           // A: Black
-            "\u001B[31m",           // B: Red
-            "\u001B[32m",           // C: Green
-            "\u001B[33m",           // D: Yellow
-            "\u001B[34m",           // E: Blue
-            "\u001B[35m",           // F: Magenta
-            "\u001B[36m",           // G: Cyan
-            "\u001B[37m",           // H: White
-            "\u001B[1m\u001B[30m",  // I: Bold Black
-            "\u001B[1m\u001B[31m",  // J: Bold Red
-            "\u001B[1m\u001B[32m",  // K: Bold Green
-            "\u001B[1m\u001B[33m",  // L: Bold Yellow
-            "\u001B[1m\u001B[34m",  // M: Bold Blue
-            "\u001B[1m\u001B[35m",  // N: Bold Magenta
-            "\u001B[1m\u001B[36m",  // O: Bold Cyan
-            "\u001B[1m\u001B[37m",  // P: Bold White
-            "\u001B[4m\u001B[30m",  // Q: Underscored Black
-            "\u001B[4m\u001B[31m",  // R: Underscored Red
-            "\u001B[4m\u001B[32m",  // S: Underscored Green
-            "\u001B[4m\u001B[33m",  // T: Underscored Yellow
-            "\u001B[4m\u001B[34m",  // U: Underscored Blue
-            "\u001B[4m\u001B[35m",  // V: Underscored Magenta 
-            "\u001B[4m\u001B[36m",  // W: Underscored Cyan
-            "\u001B[4m\u001B[37m",  // X: Underscored White
-            "\u001B[42m",           // Y: Bright Green Background
-            "\u001B[41m"            // Z: Bright Blue Background
-        );
+    public String printPapan() {
+        StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < barisPapan; i++) {
-            if (papan[i][0] != ' ') {
-                System.out.print("[" + warna.get(((int) papan[i][0]) - 65) + papan[i][0] + reset);
-            } else {
-                System.out.print("[" + papan[i][0]);
-            }
+            result.append("[" + papan[i][0]);
 
             for (int j = 1; j < kolomPapan; j++) {
-                if (papan[i][j] != ' ') {
-                    // System.out.println((int) papan[i][j] + ": " + papan[i][j]);
-                    System.out.print(", " + warna.get(((int) papan[i][j]) - 65) + papan[i][j] + reset);
-                } else {
-                    System.out.print(", " + papan[i][j]);
-                }            }
+                    result.append(", " +  papan[i][j]);
+            }
 
-            System.out.print("]");
-            System.out.println(" ");
+            result.append("]\n");
         }
+
+        return result.toString();
     }
 
     /* mengecek apakah semua titik pada papan terisi atau tidak */

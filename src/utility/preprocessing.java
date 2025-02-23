@@ -56,6 +56,48 @@ public class preprocessing {
         hasilTransformasi.add(refleksi180);
         hasilTransformasi.add(refleksi270);
 
+        // hasilTransformasi = hapusDuplikat(hasilTransformasi);
+
         return hasilTransformasi;
     }
+
+    // /* menghapus hasil transformasi yang tidak unik */
+    // public List<matrix> hapusDuplikat(List<matrix> input) {
+    //     List<matrix> hasilTransformasiUnik = new ArrayList<>();
+
+    //     for (matrix hasilTransformasi : input) {
+    //         boolean isDuplicate = false;
+    //         for (matrix sudahAda : hasilTransformasiUnik) {
+    //             if (matrixSama(sudahAda, hasilTransformasi)) {
+    //                 isDuplicate = true;
+    //                 break;
+    //             }
+    //         }
+
+    //         if (!isDuplicate) {
+    //             hasilTransformasiUnik.add(hasilTransformasi);
+    //         }
+    //     }
+
+    //     return hasilTransformasiUnik;
+    // }
+
+    // public boolean matrixSama(matrix m1, matrix m2) {
+    //     int baris = m1.getBaris();
+    //     int kolom = m1.getKolom();
+
+    //     if (baris != m2.getBaris() || kolom != m2.getKolom()) {
+    //         return false;
+    //     }
+
+    //     for (int i = 0; i < baris; i++) {
+    //         for (int j = 0; j < kolom; j++) {
+    //             if (m1.matrix[i][j] != m2.matrix[i][j]) {
+    //                 return false;
+    //             }
+    //         }
+    //     }
+
+    //     return true;
+    // }
 }

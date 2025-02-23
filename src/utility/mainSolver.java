@@ -36,7 +36,7 @@ public class mainSolver {
 
         solver solver = new solver(validasi[0], validasi[1], (validasi[3] == 1), papanCustom);
         long startTime = System.nanoTime();
-        int[] hasilBruteForce = solver.solve(puzzles, 0, 1, (validasi[3] == 1));
+        int[] hasilBruteForce = solver.solve(puzzles, (validasi[3] == 1));
 
         if (hasilBruteForce[0] == 1) {
             MessageIntro.append("Puzzle dapat diselesaikan!");

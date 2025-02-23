@@ -32,7 +32,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Puzzle Solver");
+        primaryStage.setTitle("IQ Puzzler Pro Solver");
 
         Button loadFileButton = new Button("Pilih File");
         Button startProcessButton = new Button("Mulai proses");
@@ -85,6 +85,7 @@ public class Main extends Application {
             String inputText = inputArea.getText();
             saveLabel.setVisible(false);
             saveButton.setVisible(false);
+            saveSuccessful.setVisible(false);
 
             if (inputText.trim().isEmpty()) {
                 outputLabel.setText("Input tidak dapat dikosongkan.");
@@ -101,7 +102,6 @@ public class Main extends Application {
                 String introText = solver.MessageIntro.toString();
                 outputLabel.setText(introText);
 
-                outputArea.getChildren().clear();
                 char[] entry = solver.MessageEntry.toString().toCharArray();
                 for (char c : entry) {
                     Text text = new Text(String.valueOf(c));
@@ -218,8 +218,14 @@ public class Main extends Application {
         File newFile = new File(saveDirectory, defaultFileName);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile))) {
+            String inputText = inputArea.getText();
+
+            writer.write("IQ Puzzler Pro dengan konfigurasi berikut:\n");
+            writer.write(inputText + "\n\n");
+            writer.write("Memiliki penyelesaian sebagai berikut:\n");
             writer.write(content);
-            saveSuccessful.setText("File berhasil disimpan dalam folder test!");
+            saveSuccessful.setText("File berhasil disimpan dalam folder test!\n" + "dengan nama file: " + defaultFileName);
+            
         } catch (IOException e) {
             saveSuccessful.setText("Terjadi kesalahan dalam menyimpan file.");
         }

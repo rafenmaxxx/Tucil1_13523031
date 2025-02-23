@@ -1,5 +1,4 @@
 package src.utility;
-import java.io.*;
 import java.util.*;
 
 public class solver extends mainSolver {
@@ -10,28 +9,48 @@ public class solver extends mainSolver {
     public char[][] papan;
 
     /* konstruktor solver */
-    public solver(int barisPapan, int kolomPapan) {
+    public solver(int barisPapan, int kolomPapan, boolean custom, List<List<Character>> papanCustom) {
         this.barisPapan = barisPapan;
         this.kolomPapan = kolomPapan;
         this.papan = new char[barisPapan][kolomPapan];
 
-        for (int i = 0; i < barisPapan; i++) {
-            for (int j = 0; j < kolomPapan; j++) {
-                papan[i][j] = ' ';
+        if (!custom) {
+            for (int i = 0; i < barisPapan; i++) {
+                for (int j = 0; j < kolomPapan; j++) {
+                    papan[i][j] = ' ';
+                }
+            }
+        
+        } else {
+            for (int i = 0; i < barisPapan; i++) {
+                for (int j = 0; j < kolomPapan; j++) {
+                    if (papanCustom.get(i).get(j) == 'X') {
+                        papan[i][j] = ' ';
+                    } else {
+                        papan[i][j] = '.';
+                    }
+                }
             }
         }
     }
 
     /* meletakkan puzzle pada papan */
-    public boolean taruhPuzzle(matrix currentPuzzleOrientation, int currentBaris, int currentKolom) {
+    public boolean taruhPuzzle(matrix currentPuzzleOrientation, int currentBaris, int currentKolom, boolean custom) {
         for (int i = 0; i < currentPuzzleOrientation.getBaris(); i++) {
             for (int j = 0; j < currentPuzzleOrientation.getKolom(); j++) {
                 if (currentPuzzleOrientation.matrix[i][j] == 1) {
                     int newBaris = currentBaris + i;
                     int newKolom = currentKolom + j;
 
-                    if (newBaris >= barisPapan || newKolom >= kolomPapan || papan[newBaris][newKolom] != ' ') {
-                        return false;
+                    if (!custom) {
+                        if (newBaris >= barisPapan || newKolom >= kolomPapan || papan[newBaris][newKolom] != ' ') {
+                            return false;
+                        }
+                    
+                    } else {
+                        if (newBaris >= barisPapan || newKolom >= kolomPapan || papan[newBaris][newKolom] != ' ' || papan[newBaris][newKolom] == '.') {
+                            return false;
+                        }
                     }
                 }
             }
@@ -60,7 +79,7 @@ public class solver extends mainSolver {
     }
 
     /* metode untuk menyelesaikan puzzle */
-    public int[] solve(matrix[] puzzles, int index, int iterations) {
+    public int[] solve(matrix[] puzzles, int index, int iterations, boolean custom) {
 
         if (index >= puzzles.length) {
             if (cekPapan()) {
@@ -86,8 +105,8 @@ public class solver extends mainSolver {
                 for (int currentKolom = 0; currentKolom < kolomPapan; currentKolom++) {
                     iterations++;
 
-                    if (taruhPuzzle(currentPuzzleOrientation, currentBaris, currentKolom)) {
-                        int result[] = solve(puzzles, index + 1, iterations);
+                    if (taruhPuzzle(currentPuzzleOrientation, currentBaris, currentKolom, custom)) {
+                        int result[] = solve(puzzles, index + 1, iterations, custom);
 
                         if (result[0] == 1) {
                             return result;
@@ -128,33 +147,5 @@ public class solver extends mainSolver {
             }
         }
         return true;
-    }
-
-    /* menyimpan konfigurasi puzzle pada papan ke dalam file .txt */
-    public void savePapan() {
-
-        try {
-            PrintWriter writer = new PrintWriter("solusi.txt");
-            for (int i = 0; i < barisPapan; i++) {
-                writer.print("[" + papan[i][0]);
-
-                for (int j = 1; j < kolomPapan; j++) {
-                    writer.print(", " + papan[i][j]);
-                }
-
-                if (i != barisPapan - 1) {
-                    writer.println("]");
-                } else {
-                    writer.print("]");
-                }
-            }
-
-            System.out.println("Solusi telah disimpan dalam file solusi.txt");
-            writer.close();
-    
-        } catch (IOException e) {
-            System.out.println("Terjadi kesalahan dalam membentuk file .txt");
-            e.printStackTrace();
-        }
     }
 }

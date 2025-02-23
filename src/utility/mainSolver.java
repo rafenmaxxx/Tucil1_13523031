@@ -19,115 +19,40 @@ public class mainSolver {
             return;
         } 
         
-        List<List<Character>> inputPapan = new ArrayList<>();
-        if (validasi[3] == 2) {
-            inputPapan = readPapan(scanner, validasi[0], validasi[1]);
-            if (inputPapan == null) {
+        List<List<Character>> papanCustom = new ArrayList<>();
+        if (validasi[3] == 1) {
+            papanCustom = readPapan(scanner, validasi[0], validasi[1]);
+            if (papanCustom == null) {
                 MessageIntro.append("Puzzle tidak dapat diselesaikan.");
                 return;
             }
         }
         
-        // for (int i = 0; i < inputPapan.size(); i++) {
-        //     Message.append(inputPapan.get(i));
-        // }
-
         matrix[] puzzles = readPuzzles(scanner, validasi[2]);
         if (puzzles == null) {
             MessageIntro.append("Puzzle tidak dapat diselesaikan.");
             return;
         }
 
-        if (validasi[3] == 1) {
-            solver solver = new solver(validasi[0], validasi[1]);
-            long startTime = System.nanoTime();
-            int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
+        solver solver = new solver(validasi[0], validasi[1], (validasi[3] == 1), papanCustom);
+        long startTime = System.nanoTime();
+        int[] hasilBruteForce = solver.solve(puzzles, 0, 1, (validasi[3] == 1));
 
-            if (hasilBruteForce[0] == 1) {
-                MessageIntro.append("Puzzle dapat diselesaikan!");
-                MessageEntry.append(solver.printPapan());
-            } else {
-                MessageIntro.append("Puzzle tidak dapat diselesaikan.");
-                if (solver.gagal) {
-                    MessageEntry.append("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
-                }
-            }
-                            
-            long endTime = System.nanoTime(); long duration = endTime - startTime;
-            MessageOutro.append("Waktu eksekusi: " + (duration / 1000000.0) + " ms\n");
-            MessageOutro.append("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
-
-            // if (hasilBruteForce[0] == 1) {
-            //     Scanner save = new Scanner(System.in);
-                
-            //     while (true) {
-            //         System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
-                    
-            //         String input = save.nextLine().trim();
-    
-            //         if (input.equalsIgnoreCase("iya")) {
-            //             Message.append("Melakukan penyimpanan solusi...");
-            //             solver.savePapan();
-            //             break;
-            //         } else if (input.equalsIgnoreCase("tidak")) {
-            //             Message.append("Solusi tidak disimpan.");
-            //             break;
-            //         } else {
-            //             Message.append("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
-            //         }
-            //     }
-            //     Message.append(" ");
-    
-            //     save.close();
-            // }
-
-            return;
-
+        if (hasilBruteForce[0] == 1) {
+            MessageIntro.append("Puzzle dapat diselesaikan!");
+            MessageEntry.append(solver.printPapan());
         } else {
-            solverCustom solver = new solverCustom(inputPapan, validasi[0], validasi[1]);
-            long startTime = System.nanoTime();
-            int[] hasilBruteForce = solver.solve(puzzles, 0, 1);
-
-            if (hasilBruteForce[0] == 1) {
-                MessageIntro.append("Puzzle dapat diselesaikan!");
-                MessageEntry.append(solver.printPapan());
-            } else {
-                MessageIntro.append("Puzzle tidak dapat diselesaikan.");
-                if (solver.gagal) {
-                    MessageEntry.append("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
-                }
+            MessageIntro.append("Puzzle tidak dapat diselesaikan.");
+            if (solver.gagal) {
+                MessageEntry.append("Potongan puzzle tidak dapat menutupi keseluruhan papan.");
             }
-                            
-            long endTime = System.nanoTime(); long duration = endTime - startTime;
-            MessageOutro.append("Waktu eksekusi: " + (duration / 1000000.0) + " ms\n");
-            MessageOutro.append("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
-
-            // if (hasilBruteForce[0] == 1) {
-            //     Scanner save = new Scanner(System.in);
-                
-            //     while (true) {
-            //         System.out.print("\nApakah Anda ingin menyimpan solusi? (iya / tidak): ");
-                    
-            //         String input = save.nextLine().trim();
-    
-            //         if (input.equalsIgnoreCase("iya")) {
-            //             Message.append("Melakukan penyimpanan solusi...");
-            //             solver.savePapan();
-            //             break;
-            //         } else if (input.equalsIgnoreCase("tidak")) {
-            //             Message.append("Solusi tidak disimpan.");
-            //             break;
-            //         } else {
-            //             Message.append("Input tidak valid! silakan masukan 'iya' atau 'tidak'.");
-            //         }
-            //     }
-            //     Message.append(" ");
-
-            //     save.close();
-            // }
-            
-            return;
         }
+                        
+        long endTime = System.nanoTime(); long duration = endTime - startTime;
+        MessageOutro.append("Waktu eksekusi: " + (duration / 1000000.0) + " ms\n");
+        MessageOutro.append("Banyak kasus yang ditinjau: " + hasilBruteForce[1]);
+        return;
+
     }
 
     /* validasi terhadap input variabel M, N, dan P */
@@ -175,9 +100,9 @@ public class mainSolver {
 
             int konfigurasi;
             if (token.equals("DEFAULT")) {
-                konfigurasi = 1;
+                konfigurasi = 0;
             } else {
-                konfigurasi = 2;
+                konfigurasi = 1;
             }
 
             scanner.nextLine();
@@ -249,10 +174,6 @@ public class mainSolver {
 
             for (int i = 0; i < currentLine.length; i++) {            
                 if (currentLine[i] != ' ' && currentLine[i] != charToCheck) {
-                    // Message.append("currentLine: " + line + "]");
-                    // Message.append("currentLine[i]: " + currentLine[i]);
-                    // Message.append("barisPuzzle: " + barisPuzzle);
-                    // Message.append("kolomPuzzle: " + kolomPuzzle);
                     matrix currentPuzzle = new matrix(charToCheck, barisPuzzle, kolomPuzzle);
 
                     for (int m = 0; m < barisPuzzle; m++) {
@@ -269,7 +190,6 @@ public class mainSolver {
                         }
                     }
 
-                    // currentPuzzle.printMatrix();
                     inputPuzzle.add(currentPuzzle);
 
                     bentukPuzzle = new ArrayList<>();
@@ -310,7 +230,6 @@ public class mainSolver {
             }
         }
 
-        // currentPuzzle.printMatrix();
         inputPuzzle.add(currentPuzzle);
 
         if (inputPuzzle.size() != jumlahPuzzle) {

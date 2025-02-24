@@ -1,0 +1,27 @@
+IQ Puzzler Pro dengan konfigurasi berikut:
+5 5 7
+DEFAULT
+A
+AA
+B
+BB
+C
+CC
+D
+DD
+EE
+EE
+E
+FF
+FF
+F
+GGG
+
+
+
+Memiliki penyelesaian sebagai berikut:
+[A, B, B, C, C]
+[A, A, B, C, D]
+[G, E, E, D, D]
+[G, E, E, F, F]
+[G, E, F, F, F]

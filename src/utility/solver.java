@@ -112,7 +112,7 @@ public class solver extends mainSolver {
             if (kondisiPuzzle[index][2] == -1) {
                 orientasiAwal = 0;
             } else {
-                orientasiAwal = kondisiPuzzle[index][2] + 1;
+                orientasiAwal = kondisiPuzzle[index][2];
             }
 
             for (int currentBaris = barisAwal; currentBaris < barisPapan; currentBaris++) {
@@ -128,9 +128,9 @@ public class solver extends mainSolver {
                 for (int currentKolom = temp; currentKolom < kolomPapan; currentKolom++) {
                     for (int currentOrientasi = orientasiAwal; currentOrientasi < currentPuzzleAllOrientations.size(); currentOrientasi++) {
                         matrix currentPuzzleOrientation = currentPuzzleAllOrientations.get(currentOrientasi);
-                        iterations++;
 
                         if (taruhPuzzle(currentPuzzleOrientation, currentBaris, currentKolom, custom)) {
+                            iterations++;
                             kondisiPuzzle[index] = new int[]{currentBaris, currentKolom, currentOrientasi};
                             placed = true;
                             break;

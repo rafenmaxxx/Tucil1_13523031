@@ -2,6 +2,8 @@ package src;
 import src.utility.mainSolver;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.scene.Scene;
@@ -15,6 +17,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Region;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import java.nio.file.Files;
@@ -68,6 +72,7 @@ public class Main extends Application {
         inputArea = new TextArea();
         inputArea.setWrapText(false);
         inputArea.setPrefSize(150, 400);
+        inputArea.setStyle("-fx-font-family: 'Courier New'; -fx-font-size: 14px; -fx-font-weight: bold;");
 
         outputArea = new TextFlow();
         outputArea.setMaxWidth(Double.MAX_VALUE);
@@ -80,9 +85,19 @@ public class Main extends Application {
         outputScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         VBox outputBox;
+        File gifFile = new File("src/utility/buffering.gif");
+        ImageView loadingGif = new ImageView(new Image(gifFile.toURI().toString()));
+        loadingGif.setFitWidth(100);
+        loadingGif.setFitHeight(100);
+
+        HBox loadingBox = new HBox(loadingGif);
+        loadingBox.setAlignment(Pos.CENTER_RIGHT);
 
         startProcessButton.setOnAction(e -> {
             String inputText = inputArea.getText();
+
+            outputArea.getChildren().clear();
+            outputArea.getChildren().add(loadingBox);
             saveLabel.setVisible(false);
             saveButton.setVisible(false);
             saveSuccessful.setVisible(false);
@@ -93,41 +108,56 @@ public class Main extends Application {
                 resultLabel.setText("");
             
             } else {
-                outputArea.getChildren().clear();
+                if (!outputLabel.getText().equals("Solusi Hasil Brute Force:")) {
+                    outputLabel.setText("Solusi Hasil Brute Force:");
+                };
                 resultLabel.setText("");
-
-                mainSolver solver = new mainSolver();
-                solver.solve(inputText);
                 
-                String introText = solver.MessageIntro.toString();
-                outputLabel.setText(introText);
+                Task<Void> task = new Task<>() {
+                
+                    @Override
+                    protected Void call() throws Exception {
+                        mainSolver solver = new mainSolver();
+                        solver.solve(inputText);
 
-                char[] entry = solver.MessageEntry.toString().toCharArray();
-                for (char c : entry) {
-                    Text text = new Text(String.valueOf(c));
+                        Platform.runLater(() -> {
+                            outputArea.getChildren().clear();
+                            String introText = solver.MessageIntro.toString();
+                            outputLabel.setText(introText);
 
-                    if (entry[entry.length - 1] == '.') {
-                        text.setFill(getColorForChar(c, false));
-                        
-                    } else {
-                        text.setFill(getColorForChar(c, true));
-                        text.setFont(Font.font("Courier New", FontWeight.BOLD, 14));
-                        
-                    }
-                    outputArea.getChildren().add(text);
+                            char[] entry = solver.MessageEntry.toString().toCharArray();
+                            for (char c : entry) {
+                                Text text = new Text(String.valueOf(c));
+
+                                if (entry[entry.length - 1] == '.') {
+                                    text.setFill(getColorForChar(c, false));
+                                    
+                                } else {
+                                    text.setFill(getColorForChar(c, true));
+                                    text.setFont(Font.font("Courier New", FontWeight.BOLD, 14));
+                                    
+                                }
+                                outputArea.getChildren().add(text);
+                            }
+
+                            resultLabel.setText(solver.MessageOutro.toString());
+
+                        if (introText.equals("Puzzle dapat diselesaikan!")) {
+                            saveLabel.setVisible(true);
+                            saveButton.setVisible(true);
+
+                            saveButton.setOnAction(ev -> {saveTextToFile(solver.MessageEntry.toString()); saveSuccessful.setVisible(true);});
+                        }
+                    });
+
+                    return null;
                 }
-
-                resultLabel.setText(solver.MessageOutro.toString());
-
-                if (introText.equals("Puzzle dapat diselesaikan!")) {
-                    saveLabel.setVisible(true);
-                    saveButton.setVisible(true);
-
-                    saveButton.setOnAction(ev -> {saveTextToFile(solver.MessageEntry.toString()); saveSuccessful.setVisible(true);});
-                }
-
+            };
+        
+            new Thread(task).start();
             }
         });
+
         startProcessButton.setMinHeight(30);
         startProcessButton.setMaxHeight(30);
 
